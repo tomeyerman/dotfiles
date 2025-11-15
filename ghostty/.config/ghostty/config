@@ -49,5 +49,6 @@
 # resize-overlay-duration = 4s 200ms
 
 theme = "TokyoNight Night"
-font-family = "JetBrainsMono NF"
+font-family = ""
+font-family = "JetBrainsMonoNL Nerd Font Mono"
 background-opacity = 0.8

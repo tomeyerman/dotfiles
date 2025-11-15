@@ -287,6 +287,11 @@ require('lazy').setup({
     },
   },
   { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+  {
+    "vhyrro/luarocks.nvim",
+    priority = 1000, -- Very high priority is required, luarocks.nvim should run as the first plugin in your config.
+    config = true,
+  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
