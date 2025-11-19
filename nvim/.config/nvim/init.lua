@@ -4,9 +4,20 @@ vim.cmd("set softtabstop=4")
 vim.cmd("set shiftwidth=4")
 
 vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
+-- Line numbers w/ relative line numbers
 vim.wo.number = true
 vim.wo.relativenumber = true
+
+vim.g.have_nerd_font = true
+
+-- Save undo history
+vim.o.undofile = true
+
+-- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
