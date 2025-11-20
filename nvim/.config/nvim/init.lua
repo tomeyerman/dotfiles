@@ -1,5 +1,6 @@
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_node_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 vim.cmd("set expandtab")
 vim.cmd("set tabstop=4")
@@ -58,7 +59,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
       { out, "WarningMsg" },
       { "\nPress any key to exit..." },
-    }, 
+    },
     true,
     {})
     vim.fn.getchar()
@@ -70,23 +71,23 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require("lazy").setup(
 {
-  spec = 
+  spec =
   {
-    { 
-      import = "plugins" 
+    {
+      import = "plugins"
     },
   },
-  install = 
-  { 
-    colorscheme = 
-    { 
+  install =
+  {
+    colorscheme =
+    {
       "folke/tokyonight.nvim",
       lazy = true,
-      opts = 
-      { 
-        style = "night" 
-      }, 
-    }, 
+      opts =
+      {
+        style = "night"
+      },
+    },
   },
   -- automatically check for plugin updates
   checker = { enabled = true },
