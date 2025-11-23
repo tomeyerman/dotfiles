@@ -5,7 +5,7 @@ return
   branch = 'main',
   build = ':TSUpdate',
   config = function()
-    local langs = { 'lua', 'c_sharp', 'markdown', 'markdown-inline', 'bash', 'powershell', 'rust' }
+    local langs = { 'lua', 'c_sharp', 'markdown', 'markdown-inline', 'bash', 'powershell', 'rust', 'go' }
 
     require'nvim-treesitter'.install(langs)
 

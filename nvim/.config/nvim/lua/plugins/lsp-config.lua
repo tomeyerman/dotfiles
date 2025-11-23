@@ -22,7 +22,7 @@ return
         },
         config = function()
             require("mason-lspconfig").setup({
-                ensure_installed = { "lua_ls", "bashls", "powershell_es", "rust_analyzer" }
+                ensure_installed = { "lua_ls", "bashls", "powershell_es", "rust_analyzer", "gopls" }
             })
         end
     },
@@ -38,11 +38,12 @@ return
             vim.lsp.enable('bashls')   -- Enable Bash language server
             vim.lsp.enable('powershell_es')  -- Enable PowerShell language server
             vim.lsp.enable('rust_analyzer')  -- Enable Rust language server
+            vim.lsp.enable('gopls')
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('UserLspConfig', {}),
                 callback = function(ev)
                     -- Buffer local mappings
-                    --local opts = { buffer = ev.buf }
+                    local opts = { buffer = ev.buf }
 
                     -- Go to definition
                     vim.keymap.set('n', 'grd', vim.lsp.buf.definition, { desc = 'Go to Definition', buffer = ev.buf })
