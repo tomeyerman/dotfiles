@@ -34,9 +34,8 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-			vim.lsp.enable("lua_ls")
-			vim.lsp.config("*", { capabilities = capabilities })
+			-- local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			-- vim.lsp.config("*", { capabilities = capabilities })
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -45,34 +44,14 @@ return {
 					local opts = { buffer = ev.buf }
 
 					-- Go to definition
-					vim.keymap.set("n", "grd", vim.lsp.buf.definition, { desc = "Go to Definition", buffer = ev.buf })
 					-- Go to type definition
-					vim.keymap.set(
-						"n",
-						"grD",
-						vim.lsp.buf.type_definition,
-						{ desc = "Go to Type Definition", buffer = ev.buf }
-					)
 					-- Go to implementation
-					vim.keymap.set(
-						"n",
-						"gri",
-						vim.lsp.buf.implementation,
-						{ desc = "Go to Implementation", buffer = ev.buf }
-					)
 					-- Hover documentation
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation", buffer = ev.buf })
 					-- Show references
 					--vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Show References', buffer = ev.buf })
 					-- Rename symbol
-					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename Symbol", buffer = ev.buf })
 					-- Code actions
-					vim.keymap.set(
-						"n",
-						"<leader>ca",
-						vim.lsp.buf.code_action,
-						{ desc = "Code Actions", buffer = ev.buf }
-					)
 					-- Format buffer
 					-- vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, { desc = 'Format Buffer', buffer = ev.buf })
 					-- Diagnostics
@@ -83,14 +62,6 @@ return {
 				end,
 			})
 		end,
-	},
-	{
-		"seblyng/roslyn.nvim",
-		---@module 'roslyn.config'
-		---@type RoslynNvimConfig
-		opts = {
-			-- your configuration comes here; leave empty for default settings
-		},
 	},
 	{
 		"TheLeoP/powershell.nvim",
