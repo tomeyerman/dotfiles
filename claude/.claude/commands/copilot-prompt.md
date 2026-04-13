@@ -1,6 +1,6 @@
 ---
 description: Generate a review prompt for GitHub Copilot CLI without running the dialogue. Writes the prompt to a temp file for manual use.
-disable-model-invocation: true
+disable-model-invocation: false
 argument-hint: "[--did=<uuid>] [unstaged | staged | committed into <target-branch> | plan]"
 allowed-tools: Bash(git diff*) Bash(git merge-base*) Bash(python *)
 ---

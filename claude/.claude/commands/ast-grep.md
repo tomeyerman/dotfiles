@@ -1,17 +1,6 @@
----
-name: ast-grep
-description: >
-  Structural code search using ast-grep (tree-sitter AST patterns). Use for any search that needs
-  syntax awareness: finding interface implementations, class hierarchies, method signatures with
-  specific return types, attribute usage, DI registrations, constructor injection patterns, or
-  type declarations. Use whenever the user says "find all implementations of", "find all classes
-  that extend", "find methods returning", "find all uses of attribute", "structural search",
-  "find where X is registered", "who implements", or "what inherits from". Also use proactively
-  when Grep alone cannot express the search (e.g., distinguishing a type name used as a base class
-  vs. a variable name). Do NOT use for simple text/string searches, log messages, comments, or
-  config values -- Grep is faster for those.
-trigger: /ast-grep
----
+Structural code search using ast-grep (tree-sitter AST patterns). Use for any search that needs syntax awareness: finding interface implementations, class hierarchies, method signatures with specific return types, attribute usage, DI registrations, constructor injection patterns, or type declarations. Use whenever the user says "find all implementations of", "find all classes that extend", "find methods returning", "find all uses of attribute", "structural search", "find where X is registered", "who implements", or "what inherits from". Also use proactively when Grep alone cannot express the search (e.g., distinguishing a type name used as a base class vs. a variable name). Do NOT use for simple text/string searches, log messages, comments, or config values -- Grep is faster for those.
+
+User context: $ARGUMENTS
 
 # ast-grep — Structural Code Search
 
