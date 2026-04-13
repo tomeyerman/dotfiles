@@ -4,13 +4,6 @@
 - Prefers deep technical explanations over surface-level tips
 - Wants proactive suggestions on leveraging Claude Code features
 
-## Required Tools
-These should be installed on every machine. If missing, help install them.
-- Global .NET tools: `dotnet tool install -g dotnet-coverage` and `dotnet tool install -g dotnet-reportgenerator-globaltool`
-- Diff coverage: use the `/diff-coverage` command (requires the .NET tools above + `~/.claude/scripts/diff_coverage.py`)
-- Graphify: use the `/graphify` skill (requires `~/.claude/skills/graphify/`)
-- ast-grep: use the `/ast-grep` skill for AST-aware structural code search. Requires `@ast-grep/cli` via bun (`sg` command).
-
 ## Proactive Collaboration Guidance
 Detailed guidance on when to suggest Claude Code optimizations is in `rules/proactive-guidance.md`.
 
