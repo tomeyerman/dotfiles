@@ -65,14 +65,27 @@ sg run -p 'PATTERN' -l csharp PATH --json=stream 2>/dev/null | head -N
 - Interface declarations with members
 - Patterns where `$NAME` would need to match a generic name like `Foo<T>` in isolation
 
-### Mode 2: YAML Rule (`sg scan -r`)
+### Mode 2: YAML Rule (`sg scan -r` or `--inline-rules`)
 
 Use for: **method declarations, property declarations, finding implementations of a specific
 interface by name, any search that needs `kind` filtering or relational constraints (`has`,
 `inside`, `precedes`, `follows`).**
 
-Write a temporary YAML rule file:
+**Option A: Inline rules (preferred — no temp files):**
+```bash
+sg scan --inline-rules "id: my-search
+language: csharp
+rule:
+  kind: NODE_KIND
+  has:
+    kind: CHILD_KIND
+    regex: PATTERN
+    stopBy: end" PATH --json=stream 2>/dev/null | head -N
+```
 
+Note: escape `$` as `\$` in inline rules when using double quotes. Or use a temp file instead.
+
+**Option B: Rule file (for complex rules or when escaping is awkward):**
 ```bash
 cat > /tmp/sg_rule.yaml << 'YAML'
 id: my-search
@@ -82,9 +95,14 @@ rule:
   has:
     kind: CHILD_KIND
     regex: PATTERN
+    stopBy: end
 YAML
 sg scan -r /tmp/sg_rule.yaml PATH --json=stream 2>/dev/null | head -N
 ```
+
+**Critical: Always use `stopBy: end` in relational rules.** Without it, `has` and `inside` stop
+searching at the first non-matching child node instead of traversing the entire subtree. This
+causes silent missed matches.
 
 **Common YAML rule patterns:**
 
@@ -101,6 +119,7 @@ rule:
   has:
     kind: modifier
     regex: async
+    stopBy: end
 ```
 
 Find classes implementing a specific interface:
@@ -112,6 +131,8 @@ rule:
     has:
       kind: identifier
       regex: ^IMyInterface$
+      stopBy: end
+    stopBy: end
 ```
 
 Find classes with a specific attribute:
@@ -123,6 +144,8 @@ rule:
     has:
       kind: identifier
       regex: ^HierarchyRoot$
+      stopBy: end
+    stopBy: end
 ```
 
 Find methods inside a specific class:
@@ -134,6 +157,8 @@ rule:
     has:
       kind: identifier
       regex: ^MyClassName$
+      stopBy: end
+    stopBy: end
 ```
 
 Find properties with a specific type:
@@ -143,6 +168,21 @@ rule:
   has:
     kind: predefined_type
     regex: ^string$
+    stopBy: end
+```
+
+Find code missing expected patterns (e.g., async methods without try-catch):
+```yaml
+rule:
+  all:
+    - kind: method_declaration
+    - has:
+        pattern: await $EXPR
+        stopBy: end
+    - not:
+        has:
+          kind: try_statement
+          stopBy: end
 ```
 
 ## Meta-Variable Syntax (for Pattern Mode)
@@ -245,11 +285,12 @@ When you need to match unfamiliar C# syntax:
 ## Common Pitfalls
 
 1. **Method declarations need YAML rules** — `public void Foo() { }` as a pattern parses as a local function, not a method declaration. Always use `kind: method_declaration` in a YAML rule.
-2. **Bash can mangle `$$$`** — in some shells, `$$$` is interpreted. Single quotes protect against this, but if you see numbers replacing your meta-variables, the shell is the problem.
-3. **`--lang csharp` is required** — without it, ast-grep may pick the wrong parser or skip .cs files.
-4. **Start broad, then narrow** — if a specific pattern returns nothing, simplify it. Remove modifiers, reduce meta-variables, or switch from pattern to YAML rule.
-5. **Generic types in patterns** — `List<$T>` works, but matching a class whose name is generic (like `class Foo<T>`) requires either a broad `class $NAME` or a YAML rule with `kind: class_declaration`.
-6. **Zero-based line numbers** — JSON output uses zero-based lines, not one-based.
+2. **Missing `stopBy: end`** — Relational rules (`has`, `inside`) without `stopBy: end` stop at the first non-matching child. This silently misses matches. Always add it.
+3. **Bash can mangle `$$$`** — in some shells, `$$$` is interpreted. Single quotes protect against this, but if you see numbers replacing your meta-variables, the shell is the problem. For `--inline-rules`, escape as `\$`.
+4. **`--lang csharp` is required** — without it, ast-grep may pick the wrong parser or skip .cs files.
+5. **Start broad, then narrow** — if a specific pattern returns nothing, simplify it. Remove modifiers, reduce meta-variables, or switch from pattern to YAML rule.
+6. **Generic types in patterns** — `List<$T>` works, but matching a class whose name is generic (like `class Foo<T>`) requires either a broad `class $NAME` or a YAML rule with `kind: class_declaration`.
+7. **Zero-based line numbers** — JSON output uses zero-based lines, not one-based.
 
 ## Quick Reference
 
@@ -257,7 +298,20 @@ When you need to match unfamiliar C# syntax:
 # Find all public classes in a directory
 sg run -p 'public class $NAME { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | head -20
 
-# Find classes implementing a specific interface (YAML rule)
+# Find classes implementing a specific interface (inline rule)
+sg scan --inline-rules "id: find-impl
+language: csharp
+rule:
+  kind: class_declaration
+  has:
+    kind: base_list
+    has:
+      kind: identifier
+      regex: ^IMyInterface\$
+      stopBy: end
+    stopBy: end" PATH --json=stream 2>/dev/null | head -20
+
+# Same thing with a rule file (when escaping gets awkward)
 cat > /tmp/sg_rule.yaml << 'YAML'
 id: find-impl
 language: csharp
@@ -268,20 +322,20 @@ rule:
     has:
       kind: identifier
       regex: ^IMyInterface$
+      stopBy: end
+    stopBy: end
 YAML
 sg scan -r /tmp/sg_rule.yaml PATH --json=stream 2>/dev/null | head -20
 
-# Find async methods (YAML rule)
-cat > /tmp/sg_rule.yaml << 'YAML'
-id: find-async
+# Find async methods (inline rule)
+sg scan --inline-rules "id: find-async
 language: csharp
 rule:
   kind: method_declaration
   has:
     kind: modifier
     regex: async
-YAML
-sg scan -r /tmp/sg_rule.yaml PATH --json=stream 2>/dev/null | head -20
+    stopBy: end" PATH --json=stream 2>/dev/null | head -20
 
 # Find attributed classes
 sg run -p '[HierarchyRoot] public class $NAME : $BASE { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | head -20
