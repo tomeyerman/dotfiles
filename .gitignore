@@ -1,0 +1,10 @@
+# Claude Code project-local ephemeral data
+.claude/plans/
+.claude/todos/
+.claude/settings.local.*
+
+# Session transcript exports
+*.txt
+
+# Machine-specific settings
+claude/.claude/settings.local.*

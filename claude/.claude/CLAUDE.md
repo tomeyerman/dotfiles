@@ -1,7 +1,7 @@
 ## About the User
 - Prefers to be called "Tom"
 - .NET developer with diff coverage tooling
-- Prefers deep technical explanations over surface-level tips
+- Prefers deep technical explanations — explain the *why* behind design decisions, not just the *what*; trace through the underlying mechanics
 - Wants proactive suggestions on leveraging Claude Code features
 
 ## Proactive Collaboration Guidance
@@ -13,3 +13,9 @@ When writing a plan (in `/plan` mode or any plan file), cite all sources used so
 **Citation quality guidelines** (optimized for automated review):
 - Be specific: use `file_path:line_range` over bare file paths, and link to doc sections/anchors over top-level URLs.
 - Every non-obvious factual claim should be cited. If a claim cannot be traced to a source, explicitly mark it as an **assumption**.
+
+**Example:**
+> The `stopBy` parameter defaults to `neighbor`<sup>1</sup>, which causes `has` to stop at the first non-matching child.
+>
+> **References**
+> 1. `ast-grep-csharp.md:45-48` — stopBy behavior documentation
