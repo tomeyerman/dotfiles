@@ -5,76 +5,80 @@ User context: $ARGUMENTS
 # ast-grep — Structural Code Search
 
 Search codebases using tree-sitter AST patterns instead of text regex. Finds code by its syntactic
-structure, so `class $NAME : IFoo` matches class declarations inheriting `IFoo` regardless of
-whitespace, modifiers, or surrounding code.
+structure rather than text, enabling searches like "find all classes implementing interface X"
+that are impossible with regex.
+
+**If searching C# code, read `~/.claude/references/ast-grep-csharp.md` for C#-specific patterns,
+tree-sitter node kinds, and critical gotchas before proceeding.**
 
 ## When to Use ast-grep vs Grep
 
 | Need | Tool | Why |
 |------|------|-----|
-| Classes implementing an interface | ast-grep | Structure matters — Grep can't distinguish base-list from variable usage |
-| Method declarations with a specific return type | ast-grep | Needs AST node kind `method_declaration` |
-| Attribute usage on classes or methods | ast-grep | Pattern or YAML rule on `attribute` kind |
-| Constructor injection patterns | ast-grep | Structural match on primary constructors or ctor parameters |
-| DI registration calls | ast-grep | Pattern match on method invocations |
+| Type/class hierarchies and inheritance | ast-grep | Structure matters — Grep can't distinguish base-list from variable usage |
+| Method declarations with specific signatures | ast-grep | Needs AST node kind matching |
+| Attribute/decorator usage on declarations | ast-grep | Pattern or YAML rule on attribute kind |
+| Constructor/DI injection patterns | ast-grep | Structural match on constructors or parameters |
+| Specific function/method call patterns | ast-grep | Pattern match on invocation expressions |
 | A specific string, log message, or comment | Grep | Text search — ast-grep adds no value |
 | A simple identifier or symbol name | Grep | Faster, simpler |
 | Config keys or values (JSON/YAML) | Grep | Text matching is sufficient |
 
 ## Preflight
 
-Before first use, verify ast-grep is installed:
+Verify ast-grep is installed:
 
 ```bash
 sg --version
 ```
 
-If not found, install via bun: `bun install -g @ast-grep/cli`, then copy the binary:
+If not found, install via bun: `bun install -g @ast-grep/cli`. On Windows, the bun shim may be
+broken — copy the real binary:
 ```bash
 cp "$HOME/.bun/install/global/node_modules/@ast-grep/cli-win32-x64-msvc/ast-grep.exe" "$HOME/.bun/bin/sg.exe"
 ```
 
 ## Two Search Modes
 
-ast-grep has two search modes. Choosing correctly is critical for C#.
-
 ### Mode 1: Pattern (`sg run -p`)
 
-Use for: **class declarations, expressions, statements, method calls, attribute-decorated classes.**
+Use for: **class/type declarations, expressions, statements, function/method calls.**
 
-Patterns are C# code fragments with meta-variables. They work when the fragment is parseable as
-a standalone valid C# construct.
+Patterns are code fragments with meta-variables. They work when the fragment is parseable as
+a standalone valid construct in the target language.
 
 ```bash
-sg run -p 'PATTERN' -l csharp PATH --json=stream 2>/dev/null | head -N
+sg run -p 'PATTERN' -l LANGUAGE PATH --json=stream 2>/dev/null | head -N
 ```
 
-**What works as patterns:**
-- `public class $NAME { $$$BODY }` — find all public classes
-- `public class $NAME : $BASE { $$$BODY }` — class with single base type
-- `[HierarchyRoot] public class $NAME : $BASE { $$$BODY }` — attributed class with base
-- `Console.WriteLine($$$ARGS)` — method call expressions
-- `return $EXPR;` — return statements
-- `$OBJ.$METHOD($$$ARGS)` — any method call on any object
-- `services.AddSingleton<$IFACE, $IMPL>()` — specific DI registration call
-- `await $EXPR` — any await expression
+**Meta-variable syntax:**
 
-**What does NOT work as patterns (use YAML rules instead):**
-- Method declarations (`public void Foo()` — parsed as `local_function_statement`, not `method_declaration`)
-- Property declarations
-- Interface declarations with members
-- Patterns where `$NAME` would need to match a generic name like `Foo<T>` in isolation
+| Syntax | Matches | Example |
+|--------|---------|---------|
+| `$NAME` | Exactly one AST node | `class $NAME` matches a class name |
+| `$$$ITEMS` | Zero or more nodes | `{ $$$BODY }` matches any block contents |
+| Literal code | Itself | `return true;` matches that exact statement |
+
+Patterns must be syntactically valid code fragments in the target language. They are NOT regex.
+
+**Examples (language-agnostic):**
+- `$OBJ.$METHOD($$$ARGS)` — any method call on any object
+- `await $EXPR` — any await expression
+- `return $EXPR;` — return statements
+- `console.log($$$ARGS)` — specific function calls (JS/TS)
+- `def $NAME($$$PARAMS):` — function definitions (Python)
 
 ### Mode 2: YAML Rule (`sg scan -r` or `--inline-rules`)
 
-Use for: **method declarations, property declarations, finding implementations of a specific
-interface by name, any search that needs `kind` filtering or relational constraints (`has`,
-`inside`, `precedes`, `follows`).**
+Use for: **anything requiring `kind` filtering, relational constraints (`has`, `inside`,
+`precedes`, `follows`), or composite logic (`all`, `any`, `not`).** Also required when
+pattern mode silently matches the wrong node type (language-specific — check the reference
+file for your language).
 
 **Option A: Inline rules (preferred — no temp files):**
 ```bash
 sg scan --inline-rules "id: my-search
-language: csharp
+language: LANGUAGE
 rule:
   kind: NODE_KIND
   has:
@@ -83,13 +87,13 @@ rule:
     stopBy: end" PATH --json=stream 2>/dev/null | head -N
 ```
 
-Note: escape `$` as `\$` in inline rules when using double quotes. Or use a temp file instead.
+Note: escape `$` as `\$` in inline rules when using double quotes.
 
 **Option B: Rule file (for complex rules or when escaping is awkward):**
 ```bash
 cat > /tmp/sg_rule.yaml << 'YAML'
 id: my-search
-language: csharp
+language: LANGUAGE
 rule:
   kind: NODE_KIND
   has:
@@ -104,78 +108,37 @@ sg scan -r /tmp/sg_rule.yaml PATH --json=stream 2>/dev/null | head -N
 searching at the first non-matching child node instead of traversing the entire subtree. This
 causes silent missed matches.
 
-**Common YAML rule patterns:**
+**Common YAML rule patterns (language-agnostic):**
 
-Find all method declarations:
+Find nodes of a specific kind:
 ```yaml
 rule:
-  kind: method_declaration
+  kind: function_declaration  # varies by language
 ```
 
-Find async methods:
+Find nodes containing a specific pattern:
 ```yaml
 rule:
-  kind: method_declaration
+  kind: function_declaration
   has:
-    kind: modifier
-    regex: async
+    pattern: await $EXPR
     stopBy: end
 ```
 
-Find classes implementing a specific interface:
+Find nodes inside a specific context:
 ```yaml
 rule:
-  kind: class_declaration
-  has:
-    kind: base_list
-    has:
-      kind: identifier
-      regex: ^IMyInterface$
-      stopBy: end
-    stopBy: end
-```
-
-Find classes with a specific attribute:
-```yaml
-rule:
-  kind: class_declaration
-  has:
-    kind: attribute
-    has:
-      kind: identifier
-      regex: ^HierarchyRoot$
-      stopBy: end
-    stopBy: end
-```
-
-Find methods inside a specific class:
-```yaml
-rule:
-  kind: method_declaration
+  kind: call_expression
   inside:
     kind: class_declaration
-    has:
-      kind: identifier
-      regex: ^MyClassName$
-      stopBy: end
     stopBy: end
 ```
 
-Find properties with a specific type:
-```yaml
-rule:
-  kind: property_declaration
-  has:
-    kind: predefined_type
-    regex: ^string$
-    stopBy: end
-```
-
-Find code missing expected patterns (e.g., async methods without try-catch):
+Find code missing expected patterns:
 ```yaml
 rule:
   all:
-    - kind: method_declaration
+    - kind: function_declaration
     - has:
         pattern: await $EXPR
         stopBy: end
@@ -185,66 +148,23 @@ rule:
           stopBy: end
 ```
 
-## Meta-Variable Syntax (for Pattern Mode)
+## Crafting New Patterns (AST Dump Workflow)
 
-| Syntax | Matches | Example |
-|--------|---------|---------|
-| `$NAME` | Exactly one AST node | `class $NAME` matches a class name |
-| `$$$ITEMS` | Zero or more nodes | `{ $$$BODY }` matches any block contents |
-| Literal code | Itself | `return true;` matches that exact statement |
+When you need to match unfamiliar syntax in any language:
 
-Patterns must be syntactically valid C# fragments. They are NOT regex.
-
-## C# Tree-Sitter Node Kinds Reference
-
-When writing YAML rules, use these `kind` values:
-
-| Kind | Matches |
-|------|---------|
-| `class_declaration` | `class Foo { }` |
-| `interface_declaration` | `interface IFoo { }` |
-| `struct_declaration` | `struct Bar { }` |
-| `record_declaration` | `record Baz(...)` |
-| `enum_declaration` | `enum Color { }` |
-| `method_declaration` | Methods inside types |
-| `constructor_declaration` | Constructors |
-| `property_declaration` | Properties |
-| `field_declaration` | Fields |
-| `attribute` | `[Foo]` — a single attribute |
-| `attribute_list` | `[Foo, Bar]` — the bracket group |
-| `base_list` | `: IFoo, BaseClass` |
-| `parameter_list` | `(int x, string y)` |
-| `parameter` | Single parameter |
-| `modifier` | `public`, `async`, `static`, etc. |
-| `identifier` | A name token |
-| `predefined_type` | `int`, `string`, `bool`, etc. |
-| `generic_name` | `List<T>`, `Task<bool>` |
-| `invocation_expression` | Method calls |
-| `using_directive` | `using System;` |
-| `namespace_declaration` | `namespace Foo { }` |
-| `file_scoped_namespace_declaration` | `namespace Foo;` |
-
-When in doubt about the node kind for a specific syntax, dump the AST:
-```bash
-sg run -p 'YOUR_KNOWN_MATCH' -l csharp FILE --debug-query=cst 2>&1 | head -40
-```
-
-## Performance Guidelines for Large Repos
-
-The ServiceTitan monorepo has 54K+ .cs files. A full scan takes ~20 seconds.
-
-1. **ALWAYS limit output**: pipe through `| head -N` (start with 20) or `| wc -l` for count
-2. **Narrow the PATH**: search `Modules/Telecom/` not the entire repo root
-3. **Redirect stderr**: `2>/dev/null` suppresses parse warnings on non-C# files
-4. **Exclude build artifacts**: not needed — ast-grep with `-l csharp` only processes `.cs` files, and the tree-sitter parser handles generated code fine. If results include unwanted dirs, narrow PATH instead.
-5. **Get a count first** before dumping all results:
+1. Find one example file containing the code you want to match
+2. Dump the CST to see the tree-sitter node structure:
    ```bash
-   sg run -p 'PATTERN' -l csharp PATH --json=stream 2>/dev/null | wc -l
+   sg run -p 'KNOWN_MATCH' -l LANGUAGE FILE --debug-query=cst 2>&1 | head -60
    ```
-6. **Combine with grep for post-filtering** when the structural match is broad but you need a specific name:
-   ```bash
-   sg run -p 'public class $NAME { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | grep 'Invoice'
-   ```
+3. Read the node kinds from the CST output
+4. Write a YAML rule using those node kinds
+5. Test on the single file first, then expand to the full repo
+
+Available debug formats:
+- `--debug-query=cst` — Concrete Syntax Tree (all nodes including punctuation)
+- `--debug-query=ast` — Abstract Syntax Tree (named nodes only)
+- `--debug-query=pattern` — How ast-grep interprets your pattern
 
 ## JSON Output Format
 
@@ -254,98 +174,78 @@ With `--json=stream`, each line is one JSON object:
 {
   "text": "matched code text",
   "range": {"start": {"line": N, "column": N}, "end": {"line": N, "column": N}},
-  "file": "path/to/file.cs",
+  "file": "path/to/file",
   "lines": "matched lines with context",
-  "language": "CSharp",
+  "language": "LanguageName",
   "metaVariables": {"single": {"NAME": {"text": "ActualName"}}, "multi": {}, "transformed": {}},
   "ruleId": "rule-id",
   "labels": [{"text": "...", "range": {...}, "style": "primary|secondary"}]
 }
 ```
 
-- `file` — the matched file path
+Key fields:
+- `file` — matched file path
 - `range.start.line` — zero-based line number
-- `text` — the full matched code snippet
+- `text` — full matched code snippet
 - `metaVariables.single.NAME.text` — captured value of `$NAME` (pattern mode)
 - `labels` with `style: "secondary"` — sub-matches from YAML `has` clauses
 
-## Crafting New Patterns (AST Dump Workflow)
+## Performance Guidelines for Large Repos
 
-When you need to match unfamiliar C# syntax:
-
-1. Find one example file containing the code you want to match
-2. Match it with a broad known-working pattern and dump the CST:
+1. **ALWAYS limit output**: `| head -N` (start with 20) or `| wc -l` for count
+2. **Narrow the PATH**: search a specific subdirectory, not the entire repo
+3. **Redirect stderr**: `2>/dev/null` suppresses parse warnings
+4. **Specify the language**: `-l LANGUAGE` avoids processing irrelevant files
+5. **Get a count first** before dumping all results:
    ```bash
-   sg run -p 'class $NAME' -l csharp FILE --debug-query=cst 2>&1 | head -60
+   sg run -p 'PATTERN' -l LANGUAGE PATH --json=stream 2>/dev/null | wc -l
    ```
-3. Read the node kinds and structure from the CST output
-4. Write a YAML rule using those node kinds
-5. Test on the single file first, then expand to the full repo
+6. **Combine with grep for post-filtering** when the structural match is broad:
+   ```bash
+   sg run -p 'PATTERN' -l LANGUAGE PATH --json=stream 2>/dev/null | grep 'keyword'
+   ```
 
 ## Common Pitfalls
 
-1. **Method declarations need YAML rules** — `public void Foo() { }` as a pattern parses as a local function, not a method declaration. Always use `kind: method_declaration` in a YAML rule.
+1. **Some declaration types need YAML rules** — In many languages, certain declarations parse as different node kinds when written as standalone code fragments vs. inside a class/module. If a pattern returns no results unexpectedly, try a YAML rule with `kind` instead.
 2. **Missing `stopBy: end`** — Relational rules (`has`, `inside`) without `stopBy: end` stop at the first non-matching child. This silently misses matches. Always add it.
-3. **Bash can mangle `$$$`** — in some shells, `$$$` is interpreted. Single quotes protect against this, but if you see numbers replacing your meta-variables, the shell is the problem. For `--inline-rules`, escape as `\$`.
-4. **`--lang csharp` is required** — without it, ast-grep may pick the wrong parser or skip .cs files.
-5. **Start broad, then narrow** — if a specific pattern returns nothing, simplify it. Remove modifiers, reduce meta-variables, or switch from pattern to YAML rule.
-6. **Generic types in patterns** — `List<$T>` works, but matching a class whose name is generic (like `class Foo<T>`) requires either a broad `class $NAME` or a YAML rule with `kind: class_declaration`.
-7. **Zero-based line numbers** — JSON output uses zero-based lines, not one-based.
+3. **Shell can mangle `$`** — `$NAME` and `$$$` may be interpreted by the shell. Use single quotes for patterns. For `--inline-rules` with double quotes, escape as `\$`.
+4. **`--lang` is required** — without it, ast-grep may pick the wrong parser or skip files.
+5. **Start broad, then narrow** — if a pattern returns nothing, simplify it. Remove modifiers, reduce meta-variables, or switch from pattern to YAML rule.
+6. **Zero-based line numbers** — JSON output uses zero-based lines, not one-based.
+
+## Language Reference Files
+
+For language-specific patterns, node kinds, and gotchas, read the appropriate reference:
+- **C#**: `~/.claude/references/ast-grep-csharp.md`
 
 ## Quick Reference
 
 ```bash
-# Find all public classes in a directory
-sg run -p 'public class $NAME { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | head -20
+# Pattern search (any language)
+sg run -p 'PATTERN' -l LANGUAGE PATH --json=stream 2>/dev/null | head -20
 
-# Find classes implementing a specific interface (inline rule)
-sg scan --inline-rules "id: find-impl
-language: csharp
+# Inline YAML rule search
+sg scan --inline-rules "id: my-search
+language: LANGUAGE
 rule:
-  kind: class_declaration
+  kind: NODE_KIND
   has:
-    kind: base_list
-    has:
-      kind: identifier
-      regex: ^IMyInterface\$
-      stopBy: end
+    pattern: \$PATTERN
     stopBy: end" PATH --json=stream 2>/dev/null | head -20
 
-# Same thing with a rule file (when escaping gets awkward)
+# Rule file search
 cat > /tmp/sg_rule.yaml << 'YAML'
-id: find-impl
-language: csharp
+id: my-search
+language: LANGUAGE
 rule:
-  kind: class_declaration
-  has:
-    kind: base_list
-    has:
-      kind: identifier
-      regex: ^IMyInterface$
-      stopBy: end
-    stopBy: end
+  kind: NODE_KIND
 YAML
 sg scan -r /tmp/sg_rule.yaml PATH --json=stream 2>/dev/null | head -20
 
-# Find async methods (inline rule)
-sg scan --inline-rules "id: find-async
-language: csharp
-rule:
-  kind: method_declaration
-  has:
-    kind: modifier
-    regex: async
-    stopBy: end" PATH --json=stream 2>/dev/null | head -20
-
-# Find attributed classes
-sg run -p '[HierarchyRoot] public class $NAME : $BASE { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | head -20
-
-# Find method calls on a specific type
-sg run -p '$OBJ.RegisterSinglePerHubLazy<$$$ARGS>()' -l csharp PATH --json=stream 2>/dev/null | head -20
-
 # Count matches
-sg run -p 'public class $NAME { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | wc -l
+sg run -p 'PATTERN' -l LANGUAGE PATH --json=stream 2>/dev/null | wc -l
 
 # Dump AST for pattern crafting
-sg run -p 'class $NAME' -l csharp FILE --debug-query=cst 2>&1 | head -60
+sg run -p 'KNOWN_MATCH' -l LANGUAGE FILE --debug-query=cst 2>&1 | head -60
 ```

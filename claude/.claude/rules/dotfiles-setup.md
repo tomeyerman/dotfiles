@@ -7,12 +7,13 @@ To find the dotfiles repo location on this machine, follow any symlink: `readlin
 ### Symlinked files (portable, tracked in dotfiles)
 - `CLAUDE.md`
 - `rules/context7.md`, `rules/csharp-style.md`, `rules/proactive-guidance.md`, `rules/dotfiles-setup.md`
-- `commands/ast-grep.md`, `commands/diff-coverage.md`, `commands/copilot-dialogue.md`, `commands/copilot-prompt.md`
+- `commands/ast-grep.md`, `commands/diff-coverage.md`
+- `references/ast-grep-csharp.md`
 - `scripts/diff_coverage.py`
 
 ### Local-only files (not symlinked, machine-specific)
 - `rules/work-*.md`, `rules/machine-local.md`
-- `commands/es-logs.md`, `commands/port-forward.md`
+- `commands/copilot-dialogue.md`, `commands/copilot-prompt.md`, `commands/es-logs.md`, `commands/port-forward.md`
 - `settings.json`, `plugins/`, `projects/`
 
 ### Deployment
