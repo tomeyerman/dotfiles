@@ -7,7 +7,7 @@ To find the dotfiles repo location on this machine, follow any symlink: `readlin
 ### Symlinked files (portable, tracked in dotfiles)
 - `CLAUDE.md`
 - `rules/context7.md`, `rules/csharp-style.md`, `rules/proactive-guidance.md`, `rules/dotfiles-setup.md`
-- `commands/ast-grep.md`, `commands/diff-coverage.md`
+- `commands/ast-grep.md`, `commands/diff-coverage.md`, `commands/stow.md`, `commands/new-portable.md`
 - `references/ast-grep-csharp.md`
 - `scripts/diff_coverage.py`
 
