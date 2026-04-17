@@ -46,3 +46,15 @@ ls -la ~/.claude/CLAUDE.md  # for claude package — should show symlink arrow
 ```
 
 Report which symlinks were created or updated.
+
+## Gotcha: Stow folds directories
+
+Stow creates **one symlink per directory** when every child would be stowed (directory folding). For the `claude` package this means `~/.claude/commands`, `~/.claude/references`, `~/.claude/rules`, and `~/.claude/scripts` are each a single directory symlink into the repo — not per-file symlinks. Only `~/.claude/CLAUDE.md` is an individual file symlink.
+
+Consequences:
+- **New files added to the repo appear automatically** under the folded directories — re-running stow is a no-op and is not needed just because a new file landed in `claude/.claude/commands/`.
+- **`rm ~/.claude/commands/foo.md` deletes `foo.md` from the repo** (it'll show up in `git status` as a deletion). To remove a deployed file, delete it from the repo.
+- Edits through `~/.claude/` paths write through to the repo — commit from the repo.
+- Re-stowing is only needed when adding a **new top-level entry** directly under `~/.claude/` (e.g., a new `~/.claude/scripts/` directory when none existed before).
+
+If a file appears as a regular file (not a symlink) at `~/.claude/commands/foo.md`, don't assume stow needs to run — that file is reachable *through* the parent directory symlink and is already the repo copy.
