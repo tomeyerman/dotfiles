@@ -25,7 +25,7 @@ Cross-platform dotfiles managed with GNU Stow. Each top-level directory is a **s
 stow <package>          # deploy one package
 stow alacritty bashrc claude ghostty inputrc nvim starship  # deploy all
 
-# Windows — requires dploy (pip install dploy)
+# Windows — requires dploy (uv tool install dploy)
 dploy stow <repo>/<package>/<target-subpath> <home-target>
 # Example: dploy stow claude/.claude ~/.claude
 ```

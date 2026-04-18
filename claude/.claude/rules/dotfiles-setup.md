@@ -17,7 +17,7 @@ To find the dotfiles repo location on this machine, follow any symlink: `readlin
 - `settings.json`, `plugins/`, `projects/`
 
 ### Deployment
-- **Windows:** `pip install dploy` then `dploy stow <dotfiles-repo>/claude/.claude ~/.claude`
+- **Windows:** `uv tool install dploy` then `dploy stow <dotfiles-repo>/claude/.claude ~/.claude` (requires [uv](https://docs.astral.sh/uv/) and Windows Developer Mode enabled for symlink creation)
 - **Linux/macOS:** `cd <dotfiles-repo> && stow claude`
 
 ### When editing symlinked files
