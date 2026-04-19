@@ -8,3 +8,10 @@
 
 # Machine-specific settings
 claude/.claude/settings.local.*
+
+# Machine-local files inside symlinked dirs (see claude/.claude/rules/dotfiles-setup.md)
+claude/.claude/rules/work-*.md
+claude/.claude/rules/machine-local.md
+claude/.claude/commands/copilot-*.md
+claude/.claude/commands/es-logs.md
+claude/.claude/commands/port-forward.md

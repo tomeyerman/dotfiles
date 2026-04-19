@@ -4,24 +4,41 @@ Many files in `~/.claude/` are **symlinks** to a dotfiles repo (`tomeyerman/dotf
 
 To find the dotfiles repo location on this machine, follow any symlink: `readlink ~/.claude/CLAUDE.md`
 
-### Symlinked files (portable, tracked in dotfiles)
-- `CLAUDE.md`
-- `rules/context7.md`, `rules/csharp-style.md`, `rules/proactive-guidance.md`, `rules/dotfiles-setup.md`
-- `commands/ast-grep.md`, `commands/diff-coverage.md`, `commands/stow.md`, `commands/new-portable.md`, `commands/prompt-review.md`, `commands/prompt-build.md`
-- `references/ast-grep-csharp.md`, `references/claude-prompting-best-practices.md`
-- `scripts/diff_coverage.py`
+### What's symlinked (granularity matters)
 
-### Local-only files (not symlinked, machine-specific)
+**Directory symlinks** — the entire directory points into the repo. Every file inside lives in the repo.
+
+- `~/.claude/commands/` → `<repo>/claude/.claude/commands/`
+- `~/.claude/rules/` → `<repo>/claude/.claude/rules/`
+- `~/.claude/references/` → `<repo>/claude/.claude/references/`
+- `~/.claude/scripts/` → `<repo>/claude/.claude/scripts/`
+
+**File symlinks** — individual top-level files.
+
+- `~/.claude/CLAUDE.md` → `<repo>/claude/.claude/CLAUDE.md`
+
+Everything else at the top level of `~/.claude/` (`settings.json`, `plans/`, `plugins/`, `projects/`, `sessions/`, `skills/`, etc.) is machine-local — not a symlink.
+
+### Consequences of directory-level symlinks
+
+Because `commands/`, `rules/`, `references/`, and `scripts/` are **directory** symlinks (not per-file):
+
+- **Adding a portable file is stow-free.** Creating `~/.claude/commands/foo.md` (or `<repo>/claude/.claude/commands/foo.md` — same path through the symlink) makes it live on this machine immediately. Re-stow only when adding a **new top-level entry**: a new top-level file, or a new subdirectory that needs its own directory symlink.
+- **Machine-local files inside these dirs still land in the repo on disk.** A file at `~/.claude/rules/work-corp.md` is physically stored in the dotfiles repo and shows as untracked in `git status`. Use `.gitignore` patterns (see repo-root `.gitignore`) to keep them out of commits.
+
+### Machine-local files that live inside symlinked dirs
+
+These sit inside the symlinked directories on disk, so they need `.gitignore` coverage to stay out of commits:
+
 - `rules/work-*.md`, `rules/machine-local.md`
 - `commands/copilot-dialogue.md`, `commands/copilot-prompt.md`, `commands/es-logs.md`, `commands/port-forward.md`
-- `settings.json`, `plugins/`, `projects/`
 
 ### Deployment
-- **Windows:** `uv tool install dploy` then `dploy stow <dotfiles-repo>/claude/.claude ~/.claude` (requires [uv](https://docs.astral.sh/uv/) and Windows Developer Mode enabled for symlink creation)
-- **Linux/macOS:** `cd <dotfiles-repo> && stow claude`
+
+- **Windows:** `uv tool install dploy` then `dploy stow <repo>/claude/.claude ~/.claude` (requires [uv](https://docs.astral.sh/uv/) and Windows Developer Mode enabled for symlink creation)
+- **Linux/macOS:** `cd <repo> && stow claude`
 
 ### When editing symlinked files
+
 - Edits go directly to the dotfiles repo — commit from there when ready.
-- To add a new portable file: create it in `<dotfiles-repo>/claude/.claude/`, then re-run the stow command to create the symlink.
-- To add a machine-local file: create it directly in `~/.claude/` (not in the dotfiles repo).
 - Skills (`~/.claude/skills/`) should be commands (`~/.claude/commands/`) instead — the Skill tool doesn't follow symlinks on Windows.
