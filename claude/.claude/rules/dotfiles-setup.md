@@ -4,34 +4,37 @@ Many files in `~/.claude/` are **symlinks** to a dotfiles repo (`tomeyerman/dotf
 
 To find the dotfiles repo location on this machine, follow any symlink: `readlink ~/.claude/CLAUDE.md`
 
-### What's symlinked (granularity matters)
+### How stow decides symlink granularity (folding vs unfolding)
 
-**Directory symlinks** — the entire directory points into the repo. Every file inside lives in the repo.
+Stow creates a **directory symlink** when it can — one symlink covers the whole directory. This is *folding*. If the target directory already has non-stow files at stow time, stow can't fold (the symlink would hide the existing files) and instead creates the target as a real directory with **per-file symlinks** inside for the package's files. This is *unfolding*.
 
-- `~/.claude/commands/` → `<repo>/claude/.claude/commands/`
-- `~/.claude/rules/` → `<repo>/claude/.claude/rules/`
-- `~/.claude/references/` → `<repo>/claude/.claude/references/`
-- `~/.claude/scripts/` → `<repo>/claude/.claude/scripts/`
+The granularity for any given path depends on the target's state when stow ran — not on this repo's structure. The same package can produce different symlink shapes on different machines. Don't trust a hardcoded list; check the current machine.
 
-**File symlinks** — individual top-level files.
+### Checking what's symlinked here
 
-- `~/.claude/CLAUDE.md` → `<repo>/claude/.claude/CLAUDE.md`
+```bash
+# Top-level entries in ~/.claude/ — which are symlinks (file or dir)?
+ls -la ~/.claude/ | grep '^l'
 
-Everything else at the top level of `~/.claude/` (`settings.json`, `plans/`, `plugins/`, `projects/`, `sessions/`, `skills/`, etc.) is machine-local — not a symlink.
+# Is a given subdir folded (whole-dir symlink) or unfolded (per-file symlinks)?
+readlink ~/.claude/commands                # non-empty → folded (the dir itself is a symlink)
+ls -la ~/.claude/commands/ | grep '^l'     # listed per-file symlinks → unfolded
+```
 
-### Consequences of directory-level symlinks
+### Consequences
 
-Because `commands/`, `rules/`, `references/`, and `scripts/` are **directory** symlinks (not per-file):
+- **Folded dir** (directory symlink): every file inside is physically in the repo. Creating `~/.claude/commands/foo.md` writes through to `<repo>/claude/.claude/commands/foo.md`. Machine-local files created in a folded dir need `.gitignore` coverage.
+- **Unfolded dir** (per-file symlinks): only the package's own files are symlinked; machine-local files created in the target are real local files, not in the repo. `.gitignore` is irrelevant for them.
+- **Adding a new portable file**: always add it to `<repo>/claude/.claude/<subdir>/`. If the target subdir is folded, it appears immediately through the dir symlink. If unfolded, re-run stow (or dploy) so it creates the new per-file symlink. When in doubt, re-stow — it's idempotent.
 
-- **Adding a portable file is stow-free.** Creating `~/.claude/commands/foo.md` (or `<repo>/claude/.claude/commands/foo.md` — same path through the symlink) makes it live on this machine immediately. Re-stow only when adding a **new top-level entry**: a new top-level file, or a new subdirectory that needs its own directory symlink.
-- **Machine-local files inside these dirs still land in the repo on disk.** A file at `~/.claude/rules/work-corp.md` is physically stored in the dotfiles repo and shows as untracked in `git status`. Use `.gitignore` patterns (see repo-root `.gitignore`) to keep them out of commits.
+### Known machine-local patterns
 
-### Machine-local files that live inside symlinked dirs
-
-These sit inside the symlinked directories on disk, so they need `.gitignore` coverage to stay out of commits:
+The repo's `.gitignore` already covers these so they stay out of commits when the containing dir is folded:
 
 - `rules/work-*.md`, `rules/machine-local.md`
-- `commands/copilot-dialogue.md`, `commands/copilot-prompt.md`, `commands/es-logs.md`, `commands/port-forward.md`
+- `commands/copilot-*.md`, `commands/es-logs.md`, `commands/port-forward.md`
+
+If you add a new machine-local file inside a folded dir, extend `.gitignore` to match.
 
 ### Deployment
 
