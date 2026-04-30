@@ -15,31 +15,29 @@ Execute the full diff coverage workflow end-to-end. Resolve all placeholders aut
 - **Runsettings**: Search for `.runsettings` files in the repo. If one exists, use `-s <path>`. If none exist, omit the flag.
 - **Target**: Default 90% unless the user specified otherwise.
 
-### Step 1: Run tests with coverage
+### Step 1: Run tests with coverage collection
+
+Use `dotnet-coverage collect` to drive `dotnet test`. This produces a single merged XML directly and bypasses the legacy VS data collector (Vanguard / `CodeCoverage.exe`), which fails on .NET 10 SDK with `Running event not received from CodeCoverage.exe`.
 
 ```
-dotnet test <test-project> --collect:"Code Coverage" --results-directory "TestResults" [-s <runsettings>]
+dotnet-coverage collect --output "TestResults/output.xml" --output-format xml -- dotnet test <test-project> [-s <runsettings>]
 ```
 
-If tests fail, report the failures and stop — don't proceed with broken coverage data.
+**On test failures:** check whether any failing test exercises a changed file (cross-reference the failure stack traces against `git diff --name-only <base-branch>...HEAD`). If a failure touches the changed code, stop and report — coverage on broken behavior is misleading. If failures are clearly unrelated to the diff (different files, different feature areas, pre-existing on the base branch), proceed but **call them out explicitly** in the final report so the user can triage them separately.
 
-### Step 2: Merge coverage files
+> **Why not `dotnet test --collect:"Code Coverage"`?** That path invokes the legacy Microsoft.CodeCoverage VS data collector (`microsoft.codecoverage` package), which spawns `CodeCoverage.exe` (Vanguard). On .NET 10 SDK (10.0.203+) Vanguard times out at startup, the data collector logs `Running event not received from CodeCoverage.exe`, and no `.coverage` files are produced. `dotnet-coverage collect` uses the modern in-proc collector and is the only path that reliably works across SDK versions. It also consolidates the previous "run + separate `dotnet-coverage merge`" pair into a single command.
 
-```
-dotnet-coverage merge -o "TestResults/output.xml" -f xml "TestResults/**/*.coverage" --remove-input-files
-```
-
-### Step 3: Identify changed source files
+### Step 2: Identify changed source files
 
 Run `git diff --name-only <base-branch>...HEAD -- '*.cs'` to get the list of changed C# files. Build the `filefilters` string for reportgenerator from these filenames (e.g., `+*FileName1*;+*FileName2*`).
 
-### Step 4: Generate Cobertura XML
+### Step 3: Generate Cobertura XML
 
 ```
-reportgenerator "-reports:TestResults/output.xml" -reporttypes:Cobertura "-targetdir:TestResults/cobertura" "-filefilters:<filters-from-step-3>"
+reportgenerator "-reports:TestResults/output.xml" -reporttypes:Cobertura "-targetdir:TestResults/cobertura" "-filefilters:<filters-from-step-2>"
 ```
 
-### Step 5: Run diff coverage script
+### Step 4: Run diff coverage script
 
 ```
 python ~/.claude/scripts/diff_coverage.py --base-branch <base> --cobertura TestResults/cobertura/Cobertura.xml [--target <target>]
@@ -51,9 +49,9 @@ python ~/.claude/scripts/diff_coverage.py --base-branch <base> --cobertura TestR
 - `--target` — target coverage % (default: `90`)
 - `--sources` — explicit source file list (default: auto-detect from diff)
 
-### Step 6: Report results
+### Step 5: Report results
 
-Present the output clearly. If coverage is below target, highlight which files/lines are uncovered and suggest what tests could improve coverage.
+Present the output clearly. If coverage is below target, highlight which files/lines are uncovered and suggest what tests could improve coverage. If step 1 surfaced unrelated test failures, list them under a separate "Unrelated test failures" section so they don't get conflated with the coverage outcome.
 
 ## Prerequisites
 
