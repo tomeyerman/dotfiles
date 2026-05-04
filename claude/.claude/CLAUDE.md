@@ -19,3 +19,7 @@ When writing a plan (in `/plan` mode or any plan file), cite all sources used so
 >
 > **References**
 > 1. `ast-grep-csharp.md:45-48` — stopBy behavior documentation
+# graphify
+- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
+
+When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before doing anything else. If the skill is not installed, notify the user.
