@@ -1,6 +1,7 @@
 format = """
 [░▒▓](#a3aed2)\
 $os\
+$shell\
 [](bg:#769ff0 fg:#a3aed2)\
 $directory\
 [](fg:#769ff0 bg:#394260)\
@@ -18,6 +19,13 @@ $time\
 
 [os]
 style = "bg:#a3aed2 fg:#090c0c"
+disabled = false
+
+[shell]
+powershell_indicator = ""
+unknown_indicator = "?"
+style = "bg:#a3aed2 fg:#090c0c"
+format = '[ $indicator ]($style)'
 disabled = false
 
 [directory]
