@@ -9,6 +9,7 @@ $git_branch\
 $git_status\
 [](fg:#394260 bg:#212736)\
 $dotnet\
+$python\
 $nodejs\
 $rust\
 $golang\
@@ -22,16 +23,17 @@ style = "bg:#a3aed2 fg:#090c0c"
 disabled = false
 
 [shell]
-powershell_indicator = ""
-unknown_indicator = "?"
+powershell_indicator = "ps"
+pwsh_indicator = "pwsh"
+bash_indicator = "bash"
+unknown_indicator = "???"
 style = "bg:#a3aed2 fg:#090c0c"
-format = '[ $indicator ]($style)'
+format = '[$indicator ]($style)'
 disabled = false
 
 [directory]
 style = "fg:#e3e5e5 bg:#769ff0"
-format = "[ $path ]($style)([$read_only]($read_only_style))"
-truncation_length = 3
+format = "[ $path ]($style)([$read_only ]($read_only_style))"
 truncation_symbol = "…/"
 read_only = "󰌾"
 read_only_style = "fg:#090c0c bg:#769ff0"
@@ -65,6 +67,11 @@ format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 symbol = ""
 style = "bg:#212736"
 format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+
+[python]
+symbol = ""
+format = '[ ${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+style = "fg:#769ff0 bg:#212736"
 
 [golang]
 symbol = ""
@@ -295,9 +302,6 @@ symbol = " "
 
 [purescript]
 symbol = " "
-
-[python]
-symbol = " "
 
 [raku]
 symbol = "󱖊 "
