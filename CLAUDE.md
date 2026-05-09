@@ -17,13 +17,14 @@ Cross-platform dotfiles managed with GNU Stow. Each top-level directory is a **s
 | `inputrc` | `~/` | Readline (`.inputrc`) |
 | `nvim` | `~/.config/nvim/` | Neovim (lazy.nvim plugin manager, Lua config) |
 | `starship` | `~/.config/` | Starship prompt |
+| `zshrc` | `~/` | Zsh shell (`.zshrc`) |
 
 ## Deployment Commands
 
 ```bash
 # Linux/macOS — from repo root
 stow <package>          # deploy one package
-stow alacritty bashrc claude ghostty inputrc nvim starship  # deploy all
+stow alacritty bashrc claude ghostty inputrc nvim starship zshrc  # deploy all
 
 # Windows — requires dploy (uv tool install dploy)
 dploy stow <repo>/<package>/<target-subpath> <home-target>

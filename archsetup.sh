@@ -35,6 +35,8 @@ sudo pacman -S wget \
 stow ghostty
 stow alacritty
 stow bashrc
+stow inputrc
+stow zshrc
 stow nvim
 stow starship
 
