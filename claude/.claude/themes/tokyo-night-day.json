@@ -1,0 +1,68 @@
+{
+  "name": "Tokyo Night Day",
+  "base": "light",
+  "overrides": {
+    "claude": "#5A3E8E",
+    "claudeShimmer": "#7B5BC4",
+    "text": "#343B58",
+    "inverseText": "#E6E7ED",
+    "inactive": "#6C6E75",
+    "inactiveShimmer": "#898C95",
+    "subtle": "#C4C8DA",
+    "suggestion": "#006C86",
+    "permission": "#2959AA",
+    "permissionShimmer": "#4675D1",
+    "remember": "#33635C",
+
+    "success": "#385F0D",
+    "error": "#8C4351",
+    "warning": "#8F5E15",
+    "warningShimmer": "#B68440",
+    "merged": "#5A3E8E",
+
+    "promptBorder": "#2959AA",
+    "promptBorderShimmer": "#4675D1",
+    "planMode": "#006C86",
+    "autoAccept": "#385F0D",
+    "bashBorder": "#965027",
+    "ide": "#33635C",
+    "fastMode": "#8F5E15",
+    "fastModeShimmer": "#B68440",
+
+    "diffAdded": "#D7E5C5",
+    "diffRemoved": "#E5C7CB",
+    "diffAddedDimmed": "#E5EDDC",
+    "diffRemovedDimmed": "#EFDFE1",
+    "diffAddedWord": "#B3D195",
+    "diffRemovedWord": "#D29DA3",
+
+    "userMessageBackground": "#D6D8DF",
+    "userMessageBackgroundHover": "#C9CBD3",
+    "messageActionsBackground": "#B7C1E3",
+    "bashMessageBackgroundColor": "#F0E0D0",
+    "memoryBackgroundColor": "#CFE2DF",
+    "selectionBg": "#B7C1E3",
+
+    "rate_limit_fill": "#2959AA",
+    "rate_limit_empty": "#C4C8DA",
+    "briefLabelYou": "#006C86",
+    "briefLabelClaude": "#5A3E8E",
+
+    "red_FOR_SUBAGENTS_ONLY": "#8C4351",
+    "blue_FOR_SUBAGENTS_ONLY": "#2959AA",
+    "green_FOR_SUBAGENTS_ONLY": "#385F0D",
+    "yellow_FOR_SUBAGENTS_ONLY": "#8F5E15",
+    "purple_FOR_SUBAGENTS_ONLY": "#5A3E8E",
+    "orange_FOR_SUBAGENTS_ONLY": "#965027",
+    "pink_FOR_SUBAGENTS_ONLY": "#A23F77",
+    "cyan_FOR_SUBAGENTS_ONLY": "#006C86",
+
+    "rainbow_red": "#8C4351",
+    "rainbow_orange": "#965027",
+    "rainbow_yellow": "#8F5E15",
+    "rainbow_green": "#385F0D",
+    "rainbow_blue": "#2959AA",
+    "rainbow_indigo": "#4B3D88",
+    "rainbow_violet": "#5A3E8E"
+  }
+}

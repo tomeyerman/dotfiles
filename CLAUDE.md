@@ -45,7 +45,7 @@ Files inside `claude/` are **deployed artifacts** — treat them like `.bashrc` 
 - `commands/` — slash commands (ast-grep, diff-coverage, prompt-build, prompt-review, stow, new-portable, handoff, spec)
 - `references/` — reference docs bundled with commands (ast-grep-csharp)
 - `scripts/` — helper scripts called by commands (diff_coverage.py)
-- `themes/` — custom Claude Code CLI color themes loaded via `/theme` (tokyo-night)
+- `themes/` — custom Claude Code CLI color themes loaded via `/theme` (tokyo-night, tokyo-night-storm, tokyo-night-day)
 
 Additional machine-local files live directly in `~/.claude/` (not in this repo): `rules/machine-local.md`, `rules/work-*.md`, `commands/copilot-dialogue.md`, `commands/copilot-prompt.md`, `commands/es-logs.md`, `commands/port-forward.md`, `settings.json`, `plugins/`.
 
