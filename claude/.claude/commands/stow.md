@@ -49,7 +49,7 @@ Report which symlinks were created or updated.
 
 ## Gotcha: Stow folds directories
 
-Stow creates **one symlink per directory** when every child would be stowed (directory folding). For the `claude` package this means `~/.claude/commands`, `~/.claude/references`, `~/.claude/rules`, and `~/.claude/scripts` are each a single directory symlink into the repo — not per-file symlinks. Only `~/.claude/CLAUDE.md` is an individual file symlink.
+Stow creates **one symlink per directory** when every child would be stowed (directory folding). For the `claude` package this means `~/.claude/commands`, `~/.claude/references`, `~/.claude/rules`, `~/.claude/scripts`, and `~/.claude/themes` are each a single directory symlink into the repo — not per-file symlinks. Only `~/.claude/CLAUDE.md` is an individual file symlink.
 
 Consequences:
 - **New files added to the repo appear automatically** under the folded directories — re-running stow is a no-op and is not needed just because a new file landed in `claude/.claude/commands/`.

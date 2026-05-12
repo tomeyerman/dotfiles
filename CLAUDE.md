@@ -12,7 +12,7 @@ Cross-platform dotfiles managed with GNU Stow. Each top-level directory is a **s
 |---------|--------|--------------------|
 | `alacritty` | `~/.config/alacritty/` | Alacritty terminal |
 | `bashrc` | `~/` | Bash shell (`.bashrc`) |
-| `claude` | `~/.claude/` | Claude Code (CLAUDE.md, rules, commands, references, scripts) |
+| `claude` | `~/.claude/` | Claude Code (CLAUDE.md, rules, commands, references, scripts, themes) |
 | `ghostty` | `~/.config/ghostty/` | Ghostty terminal |
 | `inputrc` | `~/` | Readline (`.inputrc`) |
 | `nvim` | `~/.config/nvim/` | Neovim (lazy.nvim plugin manager, Lua config) |
@@ -45,6 +45,7 @@ Files inside `claude/` are **deployed artifacts** — treat them like `.bashrc` 
 - `commands/` — slash commands (ast-grep, diff-coverage, prompt-build, prompt-review, stow, new-portable, handoff, spec)
 - `references/` — reference docs bundled with commands (ast-grep-csharp)
 - `scripts/` — helper scripts called by commands (diff_coverage.py)
+- `themes/` — custom Claude Code CLI color themes loaded via `/theme` (tokyo-night)
 
 Additional machine-local files live directly in `~/.claude/` (not in this repo): `rules/machine-local.md`, `rules/work-*.md`, `commands/copilot-dialogue.md`, `commands/copilot-prompt.md`, `commands/es-logs.md`, `commands/port-forward.md`, `settings.json`, `plugins/`.
 
