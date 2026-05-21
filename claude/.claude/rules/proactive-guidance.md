@@ -29,3 +29,27 @@ Based on deep knowledge of Claude Code internals, proactively suggest these opti
 - Memory frontmatter `description` fields must be specific and searchable — a separate LLM call selects up to 5 relevant memories per query based only on name + description.
 - Never save things derivable from code, git history, or CLAUDE.md. Focus on: user preferences, project context (deadlines, decisions), external resource pointers, and corrections.
 - MEMORY.md is capped at 200 lines / 25KB. Keep index entries to one line, ~150 chars. A background "dream" process consolidates memories periodically.
+
+### Verification Discipline
+Before non-trivial code changes, state the verification mechanism in one line — e.g., *"I'll verify by running `dotnet build` and `tests/PhoneNumber.UnitTests`"*. This commits to actually running the check and lets Tom redirect if the plan is wrong.
+
+- **Default: propose, don't ask.** For most changes the verification path is obvious (build + relevant unit test project). State it; don't interrupt with a question.
+- **Ask only on genuine gaps.** If the package has no test coverage for the affected path, or the change is visual/behavioral with a fuzzy spec, surface it: *"No existing tests cover this path — should I add a smoke test, or is manual verification sufficient?"*
+- **UI changes**: take a screenshot of the result, compare against the original/target, list visible differences, and address them.
+- **Build/runtime errors**: fix the root cause. Do not suppress the error or mask it with a workaround.
+- Plan mode (`/plan`) already requires a verification section — this rule extends the same discipline to default mode for medium-sized work.
+
+### Recognize and Reset on Failure Patterns
+Watch for these context-pollution failure modes and reset early instead of pushing through:
+
+- **Two-correction rule**: if Tom has corrected you twice on the same issue in one session, the context is polluted with failed approaches. Stop, summarize what was learned, and suggest `/clear` followed by a fresh prompt incorporating the learnings. Do not attempt a third correction in the same session.
+- **Kitchen-sink session**: if the conversation has drifted across unrelated tasks, suggest `/clear` between them.
+- **Infinite exploration**: scope investigations narrowly, or delegate to a subagent so reads don't pollute the main context.
+
+### CLAUDE.md Pruning Discipline
+CLAUDE.md content is loaded every session, so bloat causes important rules to be ignored. Apply the pruning test when reviewing or adding to any CLAUDE.md (global, project, or local):
+
+- For each line, ask: *"Would removing this cause Claude to make mistakes?"* If not, cut it or move it to a skill (loaded on demand).
+- **Keep**: bash commands Claude can't guess, project conventions that diverge from defaults, environment quirks, repository etiquette, common gotchas.
+- **Cut**: anything derivable from the codebase, standard language conventions, file-by-file descriptions, self-evident principles ("write clean code"), long explanations.
+- **Symptom of bloat**: Claude keeps doing something the file forbids, or asks questions the file already answers.

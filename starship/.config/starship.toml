@@ -84,6 +84,10 @@ time_format = "%R" # Hour:Minute Format
 style = "bg:#1d2230"
 format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
 
+[character]
+success_symbol = '[❯](bold green) '
+error_symbol = '[✗](bold red) '
+
 [os.symbols]
 AIX = "  "
 AlmaLinux = "  "
