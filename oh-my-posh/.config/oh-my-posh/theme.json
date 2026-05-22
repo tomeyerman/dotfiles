@@ -93,7 +93,7 @@
           "type": "root",
           "style": "powerline",
           "powerline_symbol": "",
-          "foreground": "#ffffff",
+          "foreground": "#090c0c",
           "background": "#f7768e",
           "template": "  "
         },
