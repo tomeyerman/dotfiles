@@ -5,9 +5,7 @@
   "transient_prompt": {
     "background": "transparent",
     "foreground": "green",
-    "foreground_templates": [
-      "{{ if gt .Code 0 }}red{{ end }}"
-    ],
+    "foreground_templates": ["{{ if gt .Code 0 }}red{{ end }}"],
     "template": "{{ if gt .Code 0 }}✗{{ else }}❯{{ end }} "
   },
   "blocks": [
@@ -28,7 +26,7 @@
           "foreground": "#090c0c",
           "background": "#a3aed2",
           "options": {
-            "windows": "󰍲"
+            "windows": " 󰍲 "
           },
           "template": " {{ .Icon }}",
           "leading_diamond": "",
@@ -83,7 +81,7 @@
           "powerline_symbol": "",
           "foreground": "#769ff0",
           "background": "#212736",
-          "template": "{{.Weather}} ({{.Temperature}}{{.UnitIcon}})",
+          "template": " {{ .Weather }} ({{ .Temperature }}{{ .UnitIcon }}) ",
           "options": {
             "api_key": "{{ .Env.OWM_API_KEY }}",
             "location": "{{ .Env.OWM_LOCATION }}",
@@ -118,9 +116,7 @@
           "type": "status",
           "style": "plain",
           "foreground": "green",
-          "foreground_templates": [
-            "{{ if gt .Code 0 }}red{{ end }}"
-          ],
+          "foreground_templates": ["{{ if gt .Code 0 }}red{{ end }}"],
           "options": {
             "always_enabled": true
           },
