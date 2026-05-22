@@ -86,7 +86,7 @@
           "template": "{{.Weather}} ({{.Temperature}}{{.UnitIcon}})",
           "options": {
             "api_key": "{{ .Env.OWM_API_KEY }}",
-            "location": "Denver,CO,US",
+            "location": "{{ .Env.OWM_LOCATION }}",
             "units": "imperial",
             "http_timeout": 3000
           }
