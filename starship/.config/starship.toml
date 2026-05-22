@@ -7,7 +7,6 @@ $directory\
 [](fg:#769ff0 bg:#394260)\
 $git_branch\
 $git_status\
-[](fg:#394260)\
 $username\
 \n$character"""
 
@@ -16,7 +15,7 @@ $username\
 show_always = false
 style_user = ""
 style_root = "fg:#ffffff bg:#f7768e bold"
-format = '[](fg:#f7768e)[ 󰕕 ]($style)[](fg:#f7768e)'
+format = '[](fg:#394260 bg:#f7768e)[ 󰕕 ]($style)[](fg:#f7768e)'
 
 [os]
 style = "bg:#a3aed2 fg:#090c0c"
