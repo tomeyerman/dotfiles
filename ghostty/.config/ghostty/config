@@ -50,5 +50,7 @@
 
 theme = "TokyoNight Night"
 font-family = ""
-font-family = "JetBrainsMonoNL Nerd Font Mono"
+font-family = "JetBrainsMonoNL Nerd Font"
 background-opacity = 0.8
+background-blur-radius = 16
+window-decoration = client
