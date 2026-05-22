@@ -68,7 +68,7 @@
           "powerline_symbol": "",
           "foreground": "#ffffff",
           "background": "#f7768e",
-          "template": "  {{ .Env.USERNAME }} "
+          "template": "  "
         },
         {
           "type": "text",
