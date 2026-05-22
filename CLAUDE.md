@@ -16,7 +16,8 @@ Cross-platform dotfiles managed with GNU Stow. Each top-level directory is a **s
 | `ghostty` | `~/.config/ghostty/` | Ghostty terminal |
 | `inputrc` | `~/` | Readline (`.inputrc`) |
 | `nvim` | `~/.config/nvim/` | Neovim (lazy.nvim plugin manager, Lua config) |
-| `starship` | `~/.config/` | Starship prompt |
+| `oh-my-posh` | `~/.config/` | Oh My Posh prompt (Tokyo Night theme; primary on Windows) |
+| `starship` | `~/.config/` | Starship prompt (primary on Linux) |
 | `zshrc` | `~/` | Zsh shell (`.zshrc`) |
 
 ## Deployment Commands
@@ -24,7 +25,7 @@ Cross-platform dotfiles managed with GNU Stow. Each top-level directory is a **s
 ```bash
 # Linux/macOS — from repo root
 stow <package>          # deploy one package
-stow alacritty bashrc claude ghostty inputrc nvim starship zshrc  # deploy all
+stow alacritty bashrc claude ghostty inputrc nvim oh-my-posh starship zshrc  # deploy all
 
 # Windows — requires dploy (uv tool install dploy)
 dploy stow <repo>/<package>/<target-subpath> <home-target>

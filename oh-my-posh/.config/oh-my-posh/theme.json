@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 3,
+  "final_space": true,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "os",
+          "style": "diamond",
+          "foreground": "#090c0c",
+          "background": "#a3aed2",
+          "options": {
+            "windows": "󰍲"
+          },
+          "template": " {{ .Icon }}",
+          "leading_diamond": "░▒▓",
+          "trailing_diamond": ""
+        },
+        {
+          "type": "shell",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#090c0c",
+          "background": "#a3aed2",
+          "template": "{{ if eq .Name \"powershell\" }}ps{{ else }}{{ .Name }}{{ end }} "
+        },
+        {
+          "type": "path",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#e3e5e5",
+          "background": "#769ff0",
+          "options": {
+            "style": "agnoster_short",
+            "max_depth": 3,
+            "folder_separator_icon": "/",
+            "folder_icon": "…",
+            "home_icon": "~",
+            "mapped_locations_enabled": true,
+            "mapped_locations": {
+              "~\\Documents": "󰈙",
+              "~\\Downloads": "",
+              "~\\Music": "",
+              "~\\Pictures": ""
+            }
+          },
+          "template": " {{ .Path }}{{ if not .Writable }} <#090c0c>󰌾</>{{ end }} "
+        },
+        {
+          "type": "git",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#769ff0",
+          "background": "#394260",
+          "options": {
+            "fetch_status": true,
+            "fetch_upstream_icon": false,
+            "branch_icon": " "
+          },
+          "template": " {{ .HEAD }}{{ if gt .Working.Modified 0 }} !{{ .Working.Modified }}{{ end }}{{ if gt .Working.Untracked 0 }} ?{{ .Working.Untracked }}{{ end }}{{ if gt .Working.Deleted 0 }} ✘{{ .Working.Deleted }}{{ end }}{{ if .Staging.Changed }} +{{ add (add .Staging.Modified .Staging.Added) .Staging.Deleted }}{{ end }}{{ if gt .StashCount 0 }} ${{ .StashCount }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }} "
+        },
+        {
+          "type": "root",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#ffffff",
+          "background": "#f7768e",
+          "template": "  {{ .Env.USERNAME }} "
+        },
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#ffffff",
+          "background": "transparent",
+          "template": ""
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "type": "status",
+          "style": "plain",
+          "foreground": "green",
+          "foreground_templates": [
+            "{{ if gt .Code 0 }}red{{ end }}"
+          ],
+          "options": {
+            "always_enabled": true
+          },
+          "template": "{{ if gt .Code 0 }}✗{{ else }}❯{{ end }} "
+        }
+      ]
+    }
+  ]
+}
