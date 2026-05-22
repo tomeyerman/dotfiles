@@ -2,21 +2,34 @@
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
   "version": 3,
   "final_space": true,
+  "transient_prompt": {
+    "background": "transparent",
+    "foreground": "green",
+    "foreground_templates": ["{{ if gt .Code 0 }}red{{ end }}"],
+    "template": "{{ if gt .Code 0 }}✗{{ else }}❯{{ end }} "
+  },
   "blocks": [
     {
       "type": "prompt",
       "alignment": "left",
       "segments": [
         {
+          "type": "text",
+          "style": "plain",
+          "background": "transparent",
+          "foreground": "#ffffff",
+          "template": "<#313443>█</><#484c5f>█</><#5e647c>█</><#757d99>█</><#8c96b5>█</>"
+        },
+        {
           "type": "os",
           "style": "diamond",
           "foreground": "#090c0c",
           "background": "#a3aed2",
           "options": {
-            "windows": "󰍲"
+            "windows": " 󰍲 "
           },
           "template": " {{ .Icon }}",
-          "leading_diamond": "░▒▓",
+          "leading_diamond": "",
           "trailing_diamond": ""
         },
         {
@@ -63,6 +76,20 @@
           "template": " {{ .HEAD }}{{ if gt .Working.Modified 0 }} !{{ .Working.Modified }}{{ end }}{{ if gt .Working.Untracked 0 }} ?{{ .Working.Untracked }}{{ end }}{{ if gt .Working.Deleted 0 }} ✘{{ .Working.Deleted }}{{ end }}{{ if .Staging.Changed }} +{{ add (add .Staging.Modified .Staging.Added) .Staging.Deleted }}{{ end }}{{ if gt .StashCount 0 }} ${{ .StashCount }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }} "
         },
         {
+          "type": "owm",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#769ff0",
+          "background": "#212736",
+          "template": " {{ .Weather }} ({{ .Temperature }}{{ .UnitIcon }}) ",
+          "options": {
+            "api_key": "{{ .Env.OWM_API_KEY }}",
+            "location": "{{ .Env.OWM_LOCATION }}",
+            "units": "imperial",
+            "http_timeout": 3000
+          }
+        },
+        {
           "type": "root",
           "style": "powerline",
           "powerline_symbol": "",
@@ -89,9 +116,7 @@
           "type": "status",
           "style": "plain",
           "foreground": "green",
-          "foreground_templates": [
-            "{{ if gt .Code 0 }}red{{ end }}"
-          ],
+          "foreground_templates": ["{{ if gt .Code 0 }}red{{ end }}"],
           "options": {
             "always_enabled": true
           },
