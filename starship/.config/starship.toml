@@ -16,7 +16,7 @@ $username\
 show_always = false
 style_user = ""
 style_root = "fg:#ffffff bg:#f7768e bold"
-format = '[](fg:#394260 bg:#f7768e)[ 󰕕 ]($style)[](fg:#f7768e)'
+format = '[](fg:#394260 bg:#f7768e)[  ]($style)[](fg:#f7768e)'
 
 [custom.git_end_cap]
 # Caps the git segment with a  when running as a non-root user.
