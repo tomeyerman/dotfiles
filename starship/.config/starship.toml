@@ -7,24 +7,7 @@ $directory\
 [](fg:#769ff0 bg:#394260)\
 $git_branch\
 $git_status\
-${custom.git_end_cap}\
-$username\
 \n$character"""
-
-
-[username]
-show_always = false
-style_user = ""
-style_root = "fg:#090c0c bg:#f7768e bold"
-format = '[](fg:#394260 bg:#f7768e)[  ]($style)[](fg:#f7768e)'
-
-[custom.git_end_cap]
-# Caps the git segment with a  when running as a non-root user.
-# As root, [username] renders its own segue separator (git -> pill),
-# so this stays off to avoid two  triangles back to back.
-when = '[ "$(id -u)" -ne 0 ]'
-format = '[](fg:#394260)'
-shell = ['sh']
 
 [os]
 style = "bg:#a3aed2 fg:#090c0c"
@@ -59,7 +42,7 @@ format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
 
 [git_status]
 style = "bg:#394260"
-format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)[](fg:#394260)'
 conflicted = "=${count}"
 stashed = '\$${count}'
 deleted = "✘${count}"
