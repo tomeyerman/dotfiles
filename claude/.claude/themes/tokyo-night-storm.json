@@ -2,8 +2,11 @@
   "name": "Tokyo Night Storm",
   "base": "dark",
   "overrides": {
+    "background": "#24283B",
     "claude": "#BB9AF7",
     "claudeShimmer": "#D4BBFC",
+    "claudeBlue_FOR_SYSTEM_SPINNER": "#7AA2F7",
+    "claudeBlueShimmer_FOR_SYSTEM_SPINNER": "#9DBFFA",
     "text": "#C0CAF5",
     "inverseText": "#24283B",
     "inactive": "#565F89",
@@ -15,7 +18,7 @@
     "remember": "#73DACA",
 
     "success": "#9ECE6A",
-    "error": "#F7768E",
+    "error": "#DB4B4B",
     "warning": "#E0AF68",
     "warningShimmer": "#F0C788",
     "merged": "#BB9AF7",
@@ -28,6 +31,8 @@
     "ide": "#73DACA",
     "fastMode": "#E0AF68",
     "fastModeShimmer": "#F0C788",
+    "professionalBlue": "#7AA2F7",
+    "chromeYellow": "#E0AF68",
 
     "diffAdded": "#1F3B2D",
     "diffRemoved": "#3B1F2A",
@@ -63,6 +68,13 @@
     "rainbow_green": "#9ECE6A",
     "rainbow_blue": "#7AA2F7",
     "rainbow_indigo": "#9D7CD8",
-    "rainbow_violet": "#BB9AF7"
+    "rainbow_violet": "#BB9AF7",
+    "rainbow_red_shimmer": "#F99FB0",
+    "rainbow_orange_shimmer": "#FFBB92",
+    "rainbow_yellow_shimmer": "#E9C795",
+    "rainbow_green_shimmer": "#BBDD97",
+    "rainbow_blue_shimmer": "#A2BEF9",
+    "rainbow_indigo_shimmer": "#BAA3E4",
+    "rainbow_violet_shimmer": "#CFB8F9"
   }
 }

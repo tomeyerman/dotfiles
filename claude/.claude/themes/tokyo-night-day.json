@@ -2,8 +2,11 @@
   "name": "Tokyo Night Day",
   "base": "light",
   "overrides": {
+    "background": "#E6E7ED",
     "claude": "#5A3E8E",
     "claudeShimmer": "#7B5BC4",
+    "claudeBlue_FOR_SYSTEM_SPINNER": "#2959AA",
+    "claudeBlueShimmer_FOR_SYSTEM_SPINNER": "#4675D1",
     "text": "#343B58",
     "inverseText": "#E6E7ED",
     "inactive": "#6C6E75",
@@ -15,7 +18,7 @@
     "remember": "#33635C",
 
     "success": "#385F0D",
-    "error": "#8C4351",
+    "error": "#BD4040",
     "warning": "#8F5E15",
     "warningShimmer": "#B68440",
     "merged": "#5A3E8E",
@@ -28,6 +31,8 @@
     "ide": "#33635C",
     "fastMode": "#8F5E15",
     "fastModeShimmer": "#B68440",
+    "professionalBlue": "#2959AA",
+    "chromeYellow": "#8F5E15",
 
     "diffAdded": "#D7E5C5",
     "diffRemoved": "#E5C7CB",
@@ -63,6 +68,13 @@
     "rainbow_green": "#385F0D",
     "rainbow_blue": "#2959AA",
     "rainbow_indigo": "#4B3D88",
-    "rainbow_violet": "#5A3E8E"
+    "rainbow_violet": "#5A3E8E",
+    "rainbow_red_shimmer": "#AE7B85",
+    "rainbow_orange_shimmer": "#B68468",
+    "rainbow_yellow_shimmer": "#B18E5B",
+    "rainbow_green_shimmer": "#748F56",
+    "rainbow_blue_shimmer": "#698BC4",
+    "rainbow_indigo_shimmer": "#8177AC",
+    "rainbow_violet_shimmer": "#8C78B0"
   }
 }

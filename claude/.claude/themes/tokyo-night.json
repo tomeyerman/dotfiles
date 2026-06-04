@@ -2,20 +2,23 @@
   "name": "Tokyo Night",
   "base": "dark",
   "overrides": {
+    "background": "#1A1B26",
     "claude": "#BB9AF7",
     "claudeShimmer": "#D4BBFC",
+    "claudeBlue_FOR_SYSTEM_SPINNER": "#7AA2F7",
+    "claudeBlueShimmer_FOR_SYSTEM_SPINNER": "#9DBFFA",
     "text": "#C0CAF5",
     "inverseText": "#1A1B26",
     "inactive": "#565F89",
     "inactiveShimmer": "#7986AE",
-    "subtle": "#414868",
+    "subtle": "#3B4261",
     "suggestion": "#7DCFFF",
     "permission": "#7AA2F7",
     "permissionShimmer": "#9DBFFA",
     "remember": "#73DACA",
 
     "success": "#9ECE6A",
-    "error": "#F7768E",
+    "error": "#DB4B4B",
     "warning": "#E0AF68",
     "warningShimmer": "#F0C788",
     "merged": "#BB9AF7",
@@ -28,6 +31,8 @@
     "ide": "#73DACA",
     "fastMode": "#E0AF68",
     "fastModeShimmer": "#F0C788",
+    "professionalBlue": "#7AA2F7",
+    "chromeYellow": "#E0AF68",
 
     "diffAdded": "#1F3B2D",
     "diffRemoved": "#3B1F2A",
@@ -44,7 +49,7 @@
     "selectionBg": "#283457",
 
     "rate_limit_fill": "#7AA2F7",
-    "rate_limit_empty": "#414868",
+    "rate_limit_empty": "#3B4261",
     "briefLabelYou": "#7DCFFF",
     "briefLabelClaude": "#BB9AF7",
 
@@ -63,6 +68,13 @@
     "rainbow_green": "#9ECE6A",
     "rainbow_blue": "#7AA2F7",
     "rainbow_indigo": "#9D7CD8",
-    "rainbow_violet": "#BB9AF7"
+    "rainbow_violet": "#BB9AF7",
+    "rainbow_red_shimmer": "#F99FB0",
+    "rainbow_orange_shimmer": "#FFBB92",
+    "rainbow_yellow_shimmer": "#E9C795",
+    "rainbow_green_shimmer": "#BBDD97",
+    "rainbow_blue_shimmer": "#A2BEF9",
+    "rainbow_indigo_shimmer": "#BAA3E4",
+    "rainbow_violet_shimmer": "#CFB8F9"
   }
 }
