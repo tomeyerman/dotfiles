@@ -42,7 +42,7 @@ The `claude` package is the most complex. Its contents symlink to `~/.claude/`:
 
 Files inside `claude/` are **deployed artifacts** — treat them like `.bashrc` or `alacritty.toml`. Edit them when asked, but don't audit or "improve" them as part of repo maintenance.
 
-- `rules/` — modular rule files loaded automatically (ast-grep-preference, claude-mem-restart, context7, csharp-style, dotfiles-setup, git-commit-checkpoints, git-write-consent, proactive-guidance)
+- `rules/` — modular rule files loaded automatically (code-search-tooling, claude-mem-restart, context7, csharp-style, dotfiles-setup, git-commit-checkpoints, git-write-consent, proactive-guidance)
 - `commands/` — slash commands (ast-grep, diff-coverage, prompt-build, prompt-review, stow, new-portable, handoff, spec)
 - `references/` — reference docs bundled with commands (ast-grep-csharp)
 - `scripts/` — helper scripts called by commands (diff_coverage.py)
