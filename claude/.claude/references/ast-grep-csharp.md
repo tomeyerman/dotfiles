@@ -137,21 +137,15 @@ rule:
     stopBy: end
 ```
 
-## ServiceTitan Monorepo Tips
+## Large Monorepo Tips
 
-The app monorepo (`D:\ServiceTitan\app`) has 54K+ .cs files. A full scan takes ~20 seconds.
+In a very large C# repo (tens of thousands of .cs files), a full structural scan can take many seconds.
 
 1. **ALWAYS limit output**: `| head -N` (start with 20) or `| wc -l` for count
-2. **Narrow the PATH**: search `Modules/Telecom/` not the entire repo root
+2. **Narrow the PATH**: search a specific module/subtree, not the entire repo root
 3. **Redirect stderr**: `2>/dev/null` suppresses parse warnings
 4. **Get a count first** before dumping all results
 5. **Combine with grep for post-filtering** when the structural match is broad:
    ```bash
    sg run -p 'public class $NAME { $$$BODY }' -l csharp PATH --json=stream 2>/dev/null | grep 'Invoice'
    ```
-
-Useful directory scoping:
-- `D:/ServiceTitan/app/Model/` — Xtensive ORM entity definitions
-- `D:/ServiceTitan/app/Modules/` — Business logic modules
-- `D:/ServiceTitan/app/Apps/` — Application entry points
-- `D:/ServiceTitan/app/Platform*/` — Shared platform infrastructure

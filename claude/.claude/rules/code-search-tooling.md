@@ -12,7 +12,7 @@ The governing principle: **a stateless tool that re-reads disk every run can nev
 | Question | Tool | Why |
 |---|---|---|
 | Locate a declaration by name (class, interface, struct, record, method, property, field, enum, type) | **ast-grep (`sg`)** | AST-filtered, stateless, zero setup, single call |
-| All real references / rename blast radius — **big or hot repo** (e.g. `D:\ServiceTitan\app`) | **ast-grep + verify candidates** | Over-match is *visible and auditable*; never stale |
+| All real references / rename blast radius — **big or hot repo** (a large, actively-built monorepo) | **ast-grep + verify candidates** | Over-match is *visible and auditable*; never stale |
 | All real references / rename blast radius — **small repo, index warm & fresh** | octocode `lspFindReferences` (conditional) | Semantic binding resolution beats shape — *only when fresh* |
 | Call graph (who calls who) | small/warm repo → `lspCallHierarchy`; else ast-grep call sites + read to confirm | Call graph is LSP's one real edge over ast-grep |
 | Literal text (log message, error string, comment, config key, JSON/YAML value, URL, path, ticket number, verbatim substring) | **Grep / ripgrep** | It's text, not a code entity |
@@ -32,13 +32,13 @@ When the search target is the **name of a code entity**, use ast-grep (the `sg` 
 - "find DI registrations for" / "find constructor injection of"
 - "find all instances of class X" / "where is X instantiated"
 
-**Why Grep fails here:** a Grep for `BandwidthPortOutController` returns matches from `.sistr/CODEOWNERS`, `*.md` design docs, and the declaration itself — *only if* the default file-type filter happens to include `.cs`, which it often doesn't on the first call. That's 3–4 sequential calls to converge. `sg` with `-l csharp` filters to parsed C# source in one call, and AST filtering eliminates false positives in strings, comments, and identifiers that merely contain the substring. For code entities Grep is slower *and* less precise — the inverse of the usual tradeoff.
+**Why Grep fails here:** a Grep for `OrderController` returns matches from `.github/CODEOWNERS`, `*.md` design docs, and the declaration itself — *only if* the default file-type filter happens to include `.cs`, which it often doesn't on the first call. That's 3–4 sequential calls to converge. `sg` with `-l csharp` filters to parsed C# source in one call, and AST filtering eliminates false positives in strings, comments, and identifiers that merely contain the substring. For code entities Grep is slower *and* less precise — the inverse of the usual tradeoff.
 
 **"ast-grep + verify" for references:** ast-grep matches references by *shape*, so three unrelated `Process()` methods all match. This over-match is the *honest* failure mode — you get a candidate list and confirm the real ones by reading the few call sites or adding an AST constraint (receiver type, namespace, enclosing class). Bounded, fresh work — unlike a stale LSP answer you can't tell is wrong.
 
 ### octocode LSP is conditional, not the reflexive choice
 
-`lspGotoDefinition` / `lspFindReferences` / `lspCallHierarchy` query the language server's resolved symbol graph — real bindings, not same-spelling collisions. That is genuinely *above* ast-grep for semantic questions. **But** it depends on a persistent index, which on `D:\ServiceTitan\app` (54K+ `.cs` files) breaks three ways: it takes **hours** to build, gets **killed** during builds/test runs (evicting the index), and goes **stale** — returning a wrong reference set without erroring.
+`lspGotoDefinition` / `lspFindReferences` / `lspCallHierarchy` query the language server's resolved symbol graph — real bindings, not same-spelling collisions. That is genuinely *above* ast-grep for semantic questions. **But** it depends on a persistent index, which on a very large solution (tens of thousands of `.cs` files) breaks three ways: it takes **hours** to build, gets **killed** during builds/test runs (evicting the index), and goes **stale** — returning a wrong reference set without erroring.
 
 **How octocode's LSP actually works** (octocode *spawns and manages the server itself* — it does not attach to your editor's):
 - It bundles **only** the TypeScript/JavaScript server. Every other language's binary must be installed and on PATH. For C# it shells out to **`csharp-ls`** (`dotnet tool install -g csharp-ls`, or point `OCTOCODE_CSHARP_SERVER_PATH` at it) — **not** OmniSharp. `csharp-ls` is Roslyn/MSBuild-based, so it still pays the full solution-load cost, and is historically weaker than OmniSharp on huge solutions.
@@ -47,8 +47,8 @@ When the search target is the **name of a code entity**, use ast-grep (the `sg` 
 
 Therefore:
 
-- **On `app`: treat LSP as effectively unavailable.** Default to ast-grep + verify for references. Beyond staleness, `csharp-ls` loading a 54K-file solution is slow/fragile, and if it can't, you silently get grep results that look semantic.
-- **On small repos** (e.g. `telecom-libs`, `telecom-inventory`): LSP is worth it *only when* `csharp-ls` is installed (`dotnet tool list -g` / `where csharp-ls`) **and** the index is warm and post-dates the last build.
+- **On a very large solution: treat LSP as effectively unavailable.** Default to ast-grep + verify for references. Beyond staleness, `csharp-ls` loading a solution that large is slow/fragile, and if it can't, you silently get grep results that look semantic.
+- **On small repos** (a standalone library or service repo): LSP is worth it *only when* `csharp-ls` is installed (`dotnet tool list -g` / `where csharp-ls`) **and** the index is warm and post-dates the last build.
 - **Before trusting `lspFindReferences`, confirm csharp-ls is installed and the workspace loaded** — otherwise the "references" may be grep output. And **state the freshness assumption out loud** ("assuming the index is warm and post-dates your last build") so it can be vetoed.
 - For Roslyn-grade C# semantics without a persistent LSP, a one-shot Roslyn/`dotnet` analysis is the stateless equivalent — but it needs a build, so it collides with the same contention. Reserve it for a deliberate, high-stakes rename.
 
@@ -71,7 +71,7 @@ Find identifier occurrences across C# code (fast first-pass for "references to X
 sg run -p 'IDENTIFIER_NAME' -l csharp PATH --json=stream 2>/dev/null | head -20
 ```
 
-For large repos (`D:\ServiceTitan\app` has 54K+ .cs files, ~20s full scan), always cap with `| head -N` and narrow `PATH` to a relevant subtree.
+For large repos (tens of thousands of .cs files, where a full scan can take ~20s), always cap with `| head -N` and narrow `PATH` to a relevant subtree.
 
 ### Framework-discovered classes (ASP.NET controllers, DI-registered services)
 
